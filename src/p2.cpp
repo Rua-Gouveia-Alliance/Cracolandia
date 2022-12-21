@@ -122,10 +122,8 @@ Graph* read_input(void) {
         int id1, id2;
         size_t weight;
         scanf("%d %d %ld", &id1, &id2, &weight);
-        Vertex vertex1 = {.id = id1-1, .weight = weight};
-        Vertex vertex2 = {.id = id2-1, .weight = weight};
-        graph->adjacent_vertices[vertex1.id].push_back(vertex2);
-        graph->adjacent_vertices[vertex2.id].push_back(vertex1);
+        graph->adjacent_vertices[id1 - 1].push_back(Vertex({.id = id2-1, .weight = weight}));
+        graph->adjacent_vertices[id2 - 1].push_back(Vertex({.id = id1-1, .weight = weight}));
     }
     return graph;
 }
