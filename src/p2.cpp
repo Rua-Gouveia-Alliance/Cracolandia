@@ -5,7 +5,6 @@
 #include <stack>
 #include <map>
 
-#define NIL -1
 #define FINISHED 0
 #define VISITING 1
 #define NOTVISITED 2
@@ -71,9 +70,8 @@ void visit(Graph* graph, int vertex, std::vector<int> &stack, std::vector<int> &
     stack.push_back(vertex);
 }
 
-std::vector<int> dfs(Graph* graph, int source) {
+std::vector<int> dfs(Graph* graph) {
     std::vector<int> stack, status(graph->vertex_count, NOTVISITED);
-    visit(graph, source, stack, status);
     for (size_t i = 0; i < graph->vertex_count; i++)
         if (status[i] == NOTVISITED)
             visit(graph, i, stack, status);
@@ -83,7 +81,7 @@ std::vector<int> dfs(Graph* graph, int source) {
 // Applying the algorithm relying on dfs to get the graph's sccs
 std::vector<std::vector<int>> get_sccs(Graph* graph) {
     std::vector<std::vector<int>> sccs;
-    std::vector<int> stack = dfs(graph, 0);
+    std::vector<int> stack = dfs(graph);
     std::vector<int> status(graph->vertex_count, NOTVISITED);
     // No need to compute G^t, since all edges are bi-directional, G == G^t
     for (const auto & vertex : stack) {
@@ -94,16 +92,6 @@ std::vector<std::vector<int>> get_sccs(Graph* graph) {
         }
     }
     return sccs;
-}
-
-void print_graph(Graph graph) {
-    std::cout << "Vertices: " << graph.vertex_count << std::endl;
-    for (size_t i = 0; i < graph.vertex_count; i++) {
-        std::cout << "ID: " << i+1 << " Adjacent to: ";
-        for (const auto & v : graph.adjacent_vertices[i])
-            std::cout << "(" << v.id+1 << ", " << v.weight << ") ";
-        std::cout << std::endl;
-    }
 }
 
 unsigned long int compute_graph(Graph* graph) {
