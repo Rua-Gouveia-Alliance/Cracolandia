@@ -80,10 +80,12 @@ std::vector<int> dfs(Graph* graph, int source) {
     return stack;
 }
 
+// Applying the algorithm relying on dfs to get the graph sccs
 std::vector<std::vector<int>> get_sccs(Graph* graph) {
     std::vector<std::vector<int>> sccs;
     std::vector<int> stack = dfs(graph, 0);
     std::vector<int> status(graph->vertex_count, NOTVISITED);
+    // No need to compute G^t, since all edges are bi-directional, G == G^t
     for (const auto & vertex : stack) {
         if (status[vertex] == NOTVISITED) {
             std::vector<int> scc;
