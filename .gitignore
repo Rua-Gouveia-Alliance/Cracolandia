@@ -1,2 +1,3 @@
 bin/
+tests/MyOutput
 generated_test*
