@@ -42,7 +42,7 @@ bool doesnt_contain(std::vector<int> vec, int i) {
     return true;
 }
 
-// Prim's algorithm variation, we want the most expensive tree, not the least expensive one
+// Prim's algorithm variation, we want the most expensive spanning tree, not the least expensive one
 unsigned long int get_maximum_cost_spanning_tree(Graph* graph, std::vector<int> considered_vertices) {
     int vertex_count = considered_vertices.size(), edge_count = vertex_count - 1;
     std::vector<bool> in_queue(graph->vertex_count, true);
