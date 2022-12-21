@@ -16,7 +16,7 @@ typedef struct {
 
 typedef struct {
     size_t vertex_count;
-    std::unordered_map<int, std::vector<Vertex>> adjacent_vertices;
+    std::vector<std::vector<Vertex>> adjacent_vertices;
 } Graph;
 
 unsigned long int get_tree_cost(std::vector<size_t> key) {
@@ -26,11 +26,14 @@ unsigned long int get_tree_cost(std::vector<size_t> key) {
     return cost;
 }
 
-int get_maximum_edge(int vertex_count, std::vector<size_t> key, std::vector<bool> in_queue) {
+int get_maximum_edge(std::vector<size_t> key, std::vector<bool> in_queue, std::vector<int> considered_vertices) {
     int max = 0;
-    for (int i = 0; i < vertex_count; i++)
-        if (in_queue[i] && key[i] >= key[max])
+    for (const auto & i : considered_vertices) {
+        if (in_queue[i] && key[i] > key[max]) 
             max = i;
+        else if (!in_queue[max] && in_queue[i])
+            max = i;
+    }
     return max;
 }
 
@@ -43,7 +46,7 @@ bool doesnt_contain(std::vector<int> vec, int i) {
 
 // Prim's algorithm variation, we want the most expensive spanning tree, not the least expensive one
 unsigned long int get_maximum_cost_spanning_tree(Graph* graph, std::vector<int> considered_vertices) {
-    int vertex_count = considered_vertices.size(), edge_count = vertex_count - 1;
+    int edge_count = considered_vertices.size() - 1;
     std::vector<bool> in_queue(graph->vertex_count, true);
     std::vector<size_t> key(graph->vertex_count, 0);
 
@@ -52,7 +55,7 @@ unsigned long int get_maximum_cost_spanning_tree(Graph* graph, std::vector<int> 
             in_queue[i] = false;
 
     for (int tree_size = 0; tree_size < edge_count; tree_size++) {
-        int u = get_maximum_edge(graph->vertex_count, key, in_queue);
+        int u = get_maximum_edge(key, in_queue, considered_vertices);
         in_queue[u] = false;
         for (const auto & v : graph->adjacent_vertices[u])
             if (in_queue[v.id] && v.weight > key[v.id])
@@ -83,7 +86,7 @@ std::vector<std::vector<int>> get_sccs(Graph* graph) {
     std::vector<std::vector<int>> sccs;
     std::vector<int> stack = dfs(graph);
     std::vector<int> status(graph->vertex_count, NOTVISITED);
-    // No need to compute G^t, since all edges are bi-directional, G == G^t
+    // No need to compute G^t since all edges are bi-directional, G == G^t
     for (const auto & vertex : stack) {
         if (status[vertex] == NOTVISITED) {
             std::vector<int> scc;
@@ -106,12 +109,13 @@ Graph* read_input(void) {
     size_t edge_count;
     Graph* graph = new Graph();
     std::cin >> graph->vertex_count >> edge_count;
+    graph->adjacent_vertices = std::vector<std::vector<Vertex>>(graph->vertex_count);
     for (size_t i = 0; i < edge_count; i++) {
         int id1, id2;
         size_t weight;
         scanf("%d %d %ld", &id1, &id2, &weight);
-        graph->adjacent_vertices[id1 - 1].push_back(Vertex({.id = id2-1, .weight = weight}));
-        graph->adjacent_vertices[id2 - 1].push_back(Vertex({.id = id1-1, .weight = weight}));
+        graph->adjacent_vertices[id1-1].push_back(Vertex({.id = id2-1, .weight = weight}));
+        graph->adjacent_vertices[id2-1].push_back(Vertex({.id = id1-1, .weight = weight}));
     }
     return graph;
 }
