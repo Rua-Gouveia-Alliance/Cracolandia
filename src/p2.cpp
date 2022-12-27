@@ -1,9 +1,5 @@
 #include <iostream>
-#include <unordered_map>
-#include <limits>
 #include <vector>
-#include <stack>
-#include <map>
 
 #define FINISHED 0
 #define VISITING 1
