@@ -155,7 +155,7 @@ int main(void) {
     std::vector<tree_node_t*> nodes;
     read_input(heap, nodes);
     
-    //std::cout << get_maximum_cost_spanning_tree(heap) << std::endl;
+    std::cout << get_maximum_cost_spanning_tree(heap) << std::endl;
     
     for (auto & node : nodes)
         delete node;
