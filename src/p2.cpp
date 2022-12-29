@@ -131,7 +131,6 @@ void read_input (heap_t *heap, std::vector<tree_node_t*> &nodes) {
     scanf("%d", &v_count);
     scanf("%d", &e_count);
 
-    heap->edges.push_back(nullptr);
 
     for (int i = 0; i < v_count; i++) {
         nodes.push_back(new tree_node_t());
@@ -141,9 +140,11 @@ void read_input (heap_t *heap, std::vector<tree_node_t*> &nodes) {
 
     int id1, id2;
     size_t weight;
+    heap->edges.push_back(nullptr);
     for (int i = 0; i < e_count; i++) {
         scanf("%d %d %ld", &id1, &id2, &weight);
-        max_heap_insert(heap, new edge_t({.u = nodes[id1-1], .v = nodes[id2-1], .weight = weight}));
+        edge_t* new_edge =  new edge_t({.u = nodes[id1-1], .v = nodes[id2-1], .weight = weight});
+        max_heap_insert(heap, new_edge);
     }
 
     heap->size = e_count;
@@ -154,7 +155,7 @@ int main(void) {
     std::vector<tree_node_t*> nodes;
     read_input(heap, nodes);
     
-    std::cout << get_maximum_cost_spanning_tree(heap) << std::endl;
+    //std::cout << get_maximum_cost_spanning_tree(heap) << std::endl;
     
     for (auto & node : nodes)
         delete node;
