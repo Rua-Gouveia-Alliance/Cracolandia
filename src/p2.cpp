@@ -15,14 +15,14 @@ typedef struct {
     std::vector<std::vector<Vertex>> adjacent_vertices;
 } Graph;
 
-unsigned long int get_tree_cost(std::vector<size_t> key) {
+unsigned long int get_tree_cost(std::vector<size_t> &key) {
     unsigned long int cost = 0;
     for (const auto & w : key)
         cost += w;
     return cost;
 }
 
-int get_maximum_edge(std::vector<size_t> key, std::vector<bool> in_queue, std::vector<int> considered_vertices) {
+int get_maximum_edge(std::vector<size_t> &key, std::vector<bool> &in_queue, std::vector<int> &considered_vertices) {
     int max = 0;
     for (const auto & i : considered_vertices) {
         if (in_queue[i] && key[i] > key[max]) 
@@ -33,7 +33,7 @@ int get_maximum_edge(std::vector<size_t> key, std::vector<bool> in_queue, std::v
     return max;
 }
 
-bool doesnt_contain(std::vector<int> vec, int i) {
+bool doesnt_contain(std::vector<int> &vec, int i) {
     for (const auto & n : vec)
         if (i == n)
             return false;
@@ -41,7 +41,7 @@ bool doesnt_contain(std::vector<int> vec, int i) {
 }
 
 // Prim's algorithm variation, we want the most expensive spanning tree, not the least expensive one
-unsigned long int get_maximum_cost_spanning_tree(Graph* graph, std::vector<int> considered_vertices) {
+unsigned long int get_maximum_cost_spanning_tree(Graph* graph, std::vector<int> &considered_vertices) {
     int edge_count = considered_vertices.size() - 1;
     std::vector<bool> in_queue(graph->vertex_count, true);
     std::vector<size_t> key(graph->vertex_count, 0);
@@ -69,19 +69,18 @@ void visit(Graph* graph, int vertex, std::vector<int> &stack, std::vector<int> &
     stack.push_back(vertex);
 }
 
-std::vector<int> dfs(Graph* graph) {
-    std::vector<int> stack, status(graph->vertex_count, NOTVISITED);
+void dfs(Graph* graph, std::vector<int> &stack) {
+    std::vector<int> status(graph->vertex_count, NOTVISITED);
     for (size_t i = 0; i < graph->vertex_count; i++)
         if (status[i] == NOTVISITED)
             visit(graph, i, stack, status);
-    return stack;
 }
 
 // Applying the algorithm relying on dfs to get the graph's sccs
-std::vector<std::vector<int>> get_sccs(Graph* graph) {
-    std::vector<std::vector<int>> sccs;
-    std::vector<int> stack = dfs(graph);
+void get_sccs(Graph* graph, std::vector<std::vector<int>> &sccs) {
     std::vector<int> status(graph->vertex_count, NOTVISITED);
+    std::vector<int> stack;
+    dfs(graph, stack);
     // No need to compute G^t since all edges are bi-directional, G == G^t
     for (const auto & vertex : stack) {
         if (status[vertex] == NOTVISITED) {
@@ -90,14 +89,20 @@ std::vector<std::vector<int>> get_sccs(Graph* graph) {
             sccs.push_back(scc);
         }
     }
-    return sccs;
 }
 
 unsigned long int compute_graph(Graph* graph) {
     unsigned long int result = 0;
-    std::vector<std::vector<int>> sccs = get_sccs(graph);
-    for (const auto & vertices : sccs)
+    
+    if (graph->vertex_count == 0)
+        return 0;
+
+    std::vector<std::vector<int>> sccs;
+    get_sccs(graph, sccs);
+
+    for (auto & vertices : sccs)
         result += get_maximum_cost_spanning_tree(graph, vertices);
+
     return result;
 }
 
