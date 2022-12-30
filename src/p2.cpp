@@ -125,12 +125,10 @@ size_t get_maximum_cost_spanning_tree(heap_t* heap) {
 }
 
 void read_input (heap_t *heap, std::vector<tree_node_t*> &nodes) {
+    std::ios_base::sync_with_stdio (false);
     int v_count, e_count;
 
-    scanf("%d", &v_count);
-    scanf("%d", &e_count);
-
-
+    std::cin >> v_count >> e_count;
     for (int i = 0; i < v_count; i++) {
         nodes.push_back(new tree_node_t());
         make_set(nodes[i]);
@@ -140,7 +138,7 @@ void read_input (heap_t *heap, std::vector<tree_node_t*> &nodes) {
     size_t weight;
     heap->edges.push_back(nullptr);
     for (int i = 0; i < e_count; i++) {
-        scanf("%d %d %ld", &id1, &id2, &weight);
+        std::cin >> id1 >> id2 >> weight;
         edge_t* new_edge =  new edge_t({.u = nodes[id1-1], .v = nodes[id2-1], .weight = weight});
         max_heap_insert(heap, new_edge);
     }
