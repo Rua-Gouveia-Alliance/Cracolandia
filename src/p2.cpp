@@ -2,45 +2,41 @@
 #include <vector>
 #include <cmath>
 
-struct tree_node_t {
-    tree_node_t* p;
-    size_t rank;
-};
-
 struct edge_t {
-    tree_node_t* u;
-    tree_node_t* v;
+    int u;
+    int v;
     size_t weight;
 };
 
-struct vector_t {
+struct graph_t {
     int size;
+    std::vector<int> ranks;
+    std::vector<int> parents;
     std::vector<edge_t*> data;
 };
 
-void make_set(tree_node_t* x) {
-    x->p = x;
-    x->rank = 0;
+void make_set(graph_t* graph, int x) {
+    graph->parents[x] = x;
 }
 
-tree_node_t* find_set(tree_node_t* x) {
-    if (x != x->p)
-        x->p = find_set(x->p);
-    return x->p;
+int find_set(graph_t* graph, int x) {
+    if (x != graph->parents[x])
+        graph->parents[x] = find_set(graph, graph->parents[x]);
+    return graph->parents[x];
 }
 
-void link(tree_node_t* x, tree_node_t* y) {
-    if (x->rank > y->rank) {
-        y->p = x;
+void link(graph_t* graph, int x, int y) {
+    if (graph->ranks[x] > graph->ranks[y]) {
+        graph->parents[y] = x;
     } else {
-        x->p = y;
-        if (x->rank == y->rank)
-            y->rank++;
+        graph->parents[x] = y;
+        if (graph->ranks[x] == graph->ranks[y])
+            graph->ranks[y]++;
     }
 }
 
-void node_union(tree_node_t* x, tree_node_t* y) {
-    link(find_set(x), find_set(y));
+void node_union(graph_t* graph, int x, int y) {
+    link(graph, find_set(graph, x), find_set(graph, y));
 }
 
 int pow10(int exp) {
@@ -54,7 +50,7 @@ static inline int nth_digit(size_t num, int n) {
     return (num / pow10(n)) % 10;
 }
 
-void counting_sort(vector_t* a, int n) {
+void counting_sort(graph_t* a, int n) {
     std::vector<int> c(10, 0);
     std::vector<edge_t*> b(a->size);
     
@@ -73,20 +69,20 @@ void counting_sort(vector_t* a, int n) {
         a->data[i] = b[i];
 }
 
-void radix_sort(vector_t* vector, int d_count) {
+void radix_sort(graph_t* graph, int d_count) {
     for (int i = 0; i < d_count; i++)
-        counting_sort(vector, i);
+        counting_sort(graph, i);
 }
 
-size_t get_maximum_cost_spanning_tree(vector_t* vector, int d_count) {
+size_t get_maximum_cost_spanning_tree(graph_t* graph, int d_count) {
     size_t result = 0;
     
-    radix_sort(vector, d_count);
+    radix_sort(graph, d_count);
 
-    for (int i = vector->size - 1; i > -1; i--) {   
-        edge_t* edge = vector->data[i];
-        if (find_set(edge->u) != find_set(edge->v)) {
-            node_union(edge->u, edge->v);
+    for (int i = graph->size - 1; i > -1; i--) {   
+        edge_t* edge = graph->data[i];
+        if (find_set(graph, edge->u) != find_set(graph, edge->v)) {
+            node_union(graph, edge->u, edge->v);
             result += edge->weight;
         }
         delete edge;
@@ -95,12 +91,13 @@ size_t get_maximum_cost_spanning_tree(vector_t* vector, int d_count) {
     return result;
 }
 
-void read_input (vector_t *vector, std::vector<tree_node_t*> &nodes, size_t& max) {
+void read_input(graph_t *graph, size_t& max) {
     int v_count, e_count;
     std::cin >> v_count >> e_count;
 
-    vector->size = 0;
-    nodes = std::vector<tree_node_t*>(v_count, nullptr);
+    graph->size = 0;
+    graph->parents = std::vector<int>(v_count);
+    graph->ranks = std::vector<int>(v_count, 0);
 
     int id1, id2;
     size_t weight, min;
@@ -111,21 +108,16 @@ void read_input (vector_t *vector, std::vector<tree_node_t*> &nodes, size_t& max
             min = weight;
 
         if (i < v_count || weight > min) {
-            if (nodes[--id1] == nullptr) {
-                nodes[id1] = new tree_node_t();
-                make_set(nodes[id1]);
-            }
-            if (nodes[--id2] == nullptr) {
-                nodes[id2] = new tree_node_t();
-                make_set(nodes[id2]);
-            }
+            make_set(graph, --id1);
+            make_set(graph, --id2);
             
-            edge_t* new_edge =  new edge_t({.u = nodes[id1], .v = nodes[id2], .weight = weight});
-            vector->data.push_back(new_edge);
-            vector->size++;
+            edge_t* new_edge =  new edge_t({.u = id1, .v = id2, .weight = weight});
+            graph->data.push_back(new_edge);
+            graph->size++;
             
             if (weight < min)
                 min = weight;
+
             if (weight > max)
                 max = weight;
         }
@@ -137,17 +129,12 @@ int main(void) {
     std::cin.tie(NULL);
 
     size_t max = 0;
-    vector_t* vector = new vector_t();
-    std::vector<tree_node_t*> nodes;
-    read_input(vector, nodes, max);
+    graph_t* graph = new graph_t();
+    read_input(graph, max);
     
-    std::cout << get_maximum_cost_spanning_tree(vector, floor(log10(max)) + 1) << std::endl;
+    std::cout << get_maximum_cost_spanning_tree(graph, floor(log10(max)) + 1) << std::endl;
     
-    for (auto & node : nodes)
-        if (node != nullptr)
-            delete node;
-
-    delete vector;
+    delete graph;
     
     return 0;
 }
