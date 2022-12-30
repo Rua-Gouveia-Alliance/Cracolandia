@@ -92,15 +92,14 @@ size_t get_maximum_cost_spanning_tree(graph_t* graph, int d_count) {
 void read_input(graph_t *graph, size_t& max) {
     size_t weight;
     int v_count, e_count, id1, id2;
-    scanf("%d", &v_count);
-    scanf("%d", &e_count);
+    std::cin >> v_count >> e_count;
 
     max = 0;
     graph->parents = std::vector<int>(v_count);
     graph->ranks = std::vector<int>(v_count, 0);
 
     for (int i = 0; i < e_count; i++) {
-        scanf("%d %d %ld", &id1, &id2, &weight);
+        std::cin >> id1 >> id2 >> weight;
         
         make_set(graph, --id1);
         make_set(graph, --id2);
@@ -114,13 +113,16 @@ void read_input(graph_t *graph, size_t& max) {
 }
 
 int main(void) {
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(NULL);
+
     size_t max, d_count = 0;
     graph_t* graph = new graph_t();
     read_input(graph, max);
     
     for(; max > 0; max /= 10, d_count++);
     
-    std::cout << get_maximum_cost_spanning_tree(graph, d_count) << std::endl;
+    std::cout << get_maximum_cost_spanning_tree(graph, d_count) << "\n";
     
     delete graph;
     
