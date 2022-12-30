@@ -110,8 +110,8 @@ void node_union(tree_node_t* x, tree_node_t* y) {
     link(find_set(x), find_set(y));
 }
 
-unsigned long int get_maximum_cost_spanning_tree(heap_t* heap) {
-    unsigned long int result = 0;
+unsigned long long int get_maximum_cost_spanning_tree(heap_t* heap) {
+    unsigned long long int result = 0;
 
     while (heap->size > 0) {   
         edge_t* edge = extract_max(heap);
