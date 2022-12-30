@@ -1,6 +1,5 @@
 #include <iostream>
 #include <vector>
-#include <cmath>
 
 struct edge_t {
     int u;
@@ -80,7 +79,7 @@ size_t get_maximum_cost_spanning_tree(graph_t* graph, int d_count) {
     
     radix_sort(graph, d_count);
 
-    while ((i = --graph->size) > -1) {   
+    while ((i = --graph->size) > -1) {
         if (find_set(graph, graph->data[i].u) != find_set(graph, graph->data[i].v)) {
             node_union(graph, graph->data[i].u, graph->data[i].v);
             result += graph->data[i].weight;
