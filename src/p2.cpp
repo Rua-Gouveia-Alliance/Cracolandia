@@ -75,11 +75,12 @@ void radix_sort(graph_t* graph, int d_count) {
 }
 
 size_t get_maximum_cost_spanning_tree(graph_t* graph, int d_count) {
+    int i;
     size_t result = 0;
     
     radix_sort(graph, d_count);
 
-    for (int i = graph->size - 1; i > -1; i--) {   
+    while ((i = --graph->size) > -1) {   
         if (find_set(graph, graph->data[i].u) != find_set(graph, graph->data[i].v)) {
             node_union(graph, graph->data[i].u, graph->data[i].v);
             result += graph->data[i].weight;
@@ -90,43 +91,37 @@ size_t get_maximum_cost_spanning_tree(graph_t* graph, int d_count) {
 }
 
 void read_input(graph_t *graph, size_t& max) {
-    size_t weight, min;
+    size_t weight;
     int v_count, e_count, id1, id2;
     scanf("%d", &v_count);
     scanf("%d", &e_count);
 
-    graph->size = 0;
+    max = 0;
     graph->parents = std::vector<int>(v_count);
     graph->ranks = std::vector<int>(v_count, 0);
 
     for (int i = 0; i < e_count; i++) {
         scanf("%d %d %ld", &id1, &id2, &weight);
         
-        if (i == 0)
-            min = weight;
-
-        if (i < v_count || weight > min) {
-            make_set(graph, --id1);
-            make_set(graph, --id2);
+        make_set(graph, --id1);
+        make_set(graph, --id2);
             
-            graph->data.push_back(edge_t({.u = id1, .v = id2, .weight = weight}));
-            graph->size++;
+        graph->data.push_back(edge_t({.u = id1, .v = id2, .weight = weight}));
             
-            if (weight < min)
-                min = weight;
-
-            if (weight > max)
-                max = weight;
-        }
+        if (weight > max)
+            max = weight;
     }
+    graph->size = e_count;
 }
 
 int main(void) {
-    size_t max = 0;
+    size_t max, d_count = 0;
     graph_t* graph = new graph_t();
     read_input(graph, max);
     
-    printf("%ld\n",get_maximum_cost_spanning_tree(graph, floor(log10(max)) + 1));
+    for(; max > 0; max /= 10, d_count++);
+    
+    std::cout << get_maximum_cost_spanning_tree(graph, d_count) << std::endl;
     
     delete graph;
     
