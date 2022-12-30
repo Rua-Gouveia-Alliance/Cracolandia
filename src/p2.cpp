@@ -5,7 +5,6 @@
 struct tree_node_t {
     tree_node_t* p;
     size_t rank;
-    int id;
 };
 
 struct edge_t {
@@ -98,17 +97,13 @@ size_t get_maximum_cost_spanning_tree(vector_t* vector, int d_count) {
 
 void read_input (vector_t *vector, std::vector<tree_node_t*> &nodes, size_t& max) {
     int v_count, e_count;
-
     std::cin >> v_count >> e_count;
-    for (int i = 0; i < v_count; i++) {
-        nodes.push_back(new tree_node_t());
-        make_set(nodes[i]);
-        nodes[i]->id = i;
-    }
+
+    vector->size = 0;
+    nodes = std::vector<tree_node_t*>(v_count, nullptr);
 
     int id1, id2;
     size_t weight, min;
-    vector->size = 0;
     for (int i = 0; i < e_count; i++) {
         std::cin >> id1 >> id2 >> weight;
         
@@ -116,7 +111,16 @@ void read_input (vector_t *vector, std::vector<tree_node_t*> &nodes, size_t& max
             min = weight;
 
         if (i < v_count || weight > min) {
-            edge_t* new_edge =  new edge_t({.u = nodes[id1-1], .v = nodes[id2-1], .weight = weight});
+            if (nodes[--id1] == nullptr) {
+                nodes[id1] = new tree_node_t();
+                make_set(nodes[id1]);
+            }
+            if (nodes[--id2] == nullptr) {
+                nodes[id2] = new tree_node_t();
+                make_set(nodes[id2]);
+            }
+            
+            edge_t* new_edge =  new edge_t({.u = nodes[id1], .v = nodes[id2], .weight = weight});
             vector->data.push_back(new_edge);
             vector->size++;
             
@@ -140,7 +144,8 @@ int main(void) {
     std::cout << get_maximum_cost_spanning_tree(vector, floor(log10(max)) + 1) << std::endl;
     
     for (auto & node : nodes)
-        delete node;
+        if (node != nullptr)
+            delete node;
 
     delete vector;
     
