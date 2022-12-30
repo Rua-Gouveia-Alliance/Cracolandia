@@ -12,7 +12,7 @@ struct graph_t {
     int size;
     std::vector<int> ranks;
     std::vector<int> parents;
-    std::vector<edge_t*> data;
+    std::vector<edge_t> data;
 };
 
 void make_set(graph_t* graph, int x) {
@@ -52,17 +52,17 @@ static inline int nth_digit(size_t num, int n) {
 
 void counting_sort(graph_t* a, int n) {
     std::vector<int> c(10, 0);
-    std::vector<edge_t*> b(a->size);
+    std::vector<edge_t> b(a->size);
     
     for (int i = 0; i < a->size; i++)
-        c[nth_digit(a->data[i]->weight, n)]++;
+        c[nth_digit(a->data[i].weight, n)]++;
     
     for (int i = 1; i < 10; i++)
         c[i] += c[i-1];
 
     for (int i = a->size - 1; i > -1; i--) {
-        b[c[nth_digit(a->data[i]->weight, n)]-1] = a->data[i];
-        c[nth_digit(a->data[i]->weight, n)]--;
+        b[c[nth_digit(a->data[i].weight, n)]-1] = a->data[i];
+        c[nth_digit(a->data[i].weight, n)]--;
     }
     
     for (int i = 0; i < a->size; i++)
@@ -80,27 +80,24 @@ size_t get_maximum_cost_spanning_tree(graph_t* graph, int d_count) {
     radix_sort(graph, d_count);
 
     for (int i = graph->size - 1; i > -1; i--) {   
-        edge_t* edge = graph->data[i];
-        if (find_set(graph, edge->u) != find_set(graph, edge->v)) {
-            node_union(graph, edge->u, edge->v);
-            result += edge->weight;
+        if (find_set(graph, graph->data[i].u) != find_set(graph, graph->data[i].v)) {
+            node_union(graph, graph->data[i].u, graph->data[i].v);
+            result += graph->data[i].weight;
         }
-        delete edge;
     }
 
     return result;
 }
 
 void read_input(graph_t *graph, size_t& max) {
-    int v_count, e_count;
+    size_t weight, min;
+    int v_count, e_count, id1, id2;
     std::cin >> v_count >> e_count;
 
     graph->size = 0;
     graph->parents = std::vector<int>(v_count);
     graph->ranks = std::vector<int>(v_count, 0);
 
-    int id1, id2;
-    size_t weight, min;
     for (int i = 0; i < e_count; i++) {
         std::cin >> id1 >> id2 >> weight;
         
@@ -111,8 +108,7 @@ void read_input(graph_t *graph, size_t& max) {
             make_set(graph, --id1);
             make_set(graph, --id2);
             
-            edge_t* new_edge =  new edge_t({.u = id1, .v = id2, .weight = weight});
-            graph->data.push_back(new_edge);
+            graph->data.push_back(edge_t({.u = id1, .v = id2, .weight = weight}));
             graph->size++;
             
             if (weight < min)
