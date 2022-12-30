@@ -4,7 +4,6 @@
 struct tree_node_t {
     tree_node_t* p;
     size_t rank;
-    size_t id;
 };
 
 struct edge_t {
@@ -134,7 +133,6 @@ void read_input (heap_t *heap, std::vector<tree_node_t*> &nodes) {
 
     for (int i = 0; i < v_count; i++) {
         nodes.push_back(new tree_node_t());
-        nodes[i]->id = i;
         make_set(nodes[i]);
     }
 
