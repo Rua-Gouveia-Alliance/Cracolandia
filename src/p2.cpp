@@ -125,7 +125,9 @@ size_t get_maximum_cost_spanning_tree(heap_t* heap) {
 }
 
 void read_input (heap_t *heap, std::vector<tree_node_t*> &nodes) {
-    std::ios_base::sync_with_stdio (false);
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(NULL);
+
     int v_count, e_count;
 
     std::cin >> v_count >> e_count;
