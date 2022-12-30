@@ -137,20 +137,28 @@ void read_input (heap_t *heap, std::vector<tree_node_t*> &nodes) {
     }
 
     int id1, id2;
-    size_t weight;
+    size_t weight, min;
     heap->edges.push_back(nullptr);
     for (int i = 0; i < e_count; i++) {
         std::cin >> id1 >> id2 >> weight;
-        edge_t* new_edge =  new edge_t({.u = nodes[id1-1], .v = nodes[id2-1], .weight = weight});
-        max_heap_insert(heap, new_edge);
-    }
+        
+        if (i == 0)
+            min = weight;
 
-    heap->size = e_count;
+        if (i < v_count || weight > min) {
+            edge_t* new_edge =  new edge_t({.u = nodes[id1-1], .v = nodes[id2-1], .weight = weight});
+            max_heap_insert(heap, new_edge);
+            
+            if (weight < min)
+                min = weight;
+        }
+    }
 }
 
 int main(void) {
     heap_t* heap = new heap_t();
     std::vector<tree_node_t*> nodes;
+    heap->size = 0;
     read_input(heap, nodes);
     
     std::cout << get_maximum_cost_spanning_tree(heap) << std::endl;
