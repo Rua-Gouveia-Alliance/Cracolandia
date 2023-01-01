@@ -4,11 +4,8 @@ with open("generated_test.in", "w") as test:
     test.write(str(vertices) + "\n")
     test.write(str(vertices*(vertices-1)) + "\n")
 
-    for i in range(1, vertices + 1):
-        for j in range(1, vertices + 1):
+    for i in range(vertices, 0, -1):
+        for j in range(vertices, 0, -1):
             if (j != i):
-                test.write(str(i) + " " + str(j) + " 1\n")
-
-    with open("generated_test.out", "w") as result:
-        result.write(str(vertices-1) + "\n")
+                test.write(str(i) + " " + str(j) + " " + str(((i*j)//3)+1) + "\n")
     
