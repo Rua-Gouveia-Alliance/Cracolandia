@@ -16,6 +16,7 @@ struct graph_t {
 
 void make_set(graph_t* graph, int x) {
     graph->parents[x] = x;
+    graph->ranks[x] = 0;
 }
 
 int find_set(graph_t* graph, int x) {
@@ -74,12 +75,11 @@ void radix_sort(graph_t* graph, int d_count) {
 }
 
 size_t get_maximum_cost_spanning_tree(graph_t* graph, int d_count) {
-    int i;
     size_t result = 0;
     
     radix_sort(graph, d_count);
 
-    while ((i = --graph->size) > -1) {
+    for (int i = graph->size - 1; i > -1; i--) {
         if (find_set(graph, graph->data[i].u) != find_set(graph, graph->data[i].v)) {
             node_union(graph, graph->data[i].u, graph->data[i].v);
             result += graph->data[i].weight;
@@ -96,7 +96,7 @@ void read_input(graph_t *graph, size_t& max) {
 
     max = 0;
     graph->parents = std::vector<int>(v_count);
-    graph->ranks = std::vector<int>(v_count, 0);
+    graph->ranks = std::vector<int>(v_count);
 
     for (int i = 0; i < e_count; i++) {
         std::cin >> id1 >> id2 >> weight;
