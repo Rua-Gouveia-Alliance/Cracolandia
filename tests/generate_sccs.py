@@ -1,15 +1,17 @@
-with open("generated_test.in", "w") as test:
+with open("generated_test.in", "w") as test_in:
     sccs = int(input("SCCS? "))
 
-    test.write(str(sccs*3) + "\n")
-    test.write(str(sccs*3) + "\n")
+    test_in.write(str(sccs*3) + "\n")
+    test_in.write(str(sccs*3) + "\n")
 
     j = 1
+    result = 0
     for i in range(sccs):
-        test.write(str(j) + " " + str(j+1) + " 1\n")
-        test.write(str(j) + " " + str(j+2) + " 1\n")
-        test.write(str(j+1) + " " + str(j+2) + " 1\n")
+        test_in.write(str(j) + " " + str(j+1) + " " + str((j*i + 3)*(j + 1)) + "\n")
+        test_in.write(str(j) + " " + str(j+2) + " " + str((j*i + 3)*(j + 2)) + "\n")
+        test_in.write(str(j+1) + " " + str(j+2) + " " + str((j*i + 3)*j) + "\n")
+        result += (j*i + 3)*(j + 1) + (j*i + 3)*(j + 2)
         j += 3;
 
-    with open("generated_test.out", "w") as result:
-        result.write(str(sccs*2) + "\n")
+    with open("generated_test.out", "w") as test_out:
+        test_out.write(str(result) + "\n");
