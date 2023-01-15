@@ -27,15 +27,15 @@ pormenorizada de cada função.
 ciclo que depende do número de arcos do grafo, Θ(E).
 - **Implementação do algoritmo de kruskal** (get_maximum_cost_spanning_tree):
 Para ordenar os arcos do grafo foi utilizada a função sort, da Standard Template
-Library do c++, que tem complexidade O(ElogE) [1](#Notas). A estrutura de dados utilizada
+Library do c++, que tem complexidade O(ElogE) [(1)](#Notas). A estrutura de dados utilizada
 para representar os conjuntos disjuntos foi uma árvore e fazemos uso das
 heurísticas “compressão de caminhos” e “união por categoria”. Atendendo a isto,
 sabemos que é possível assegurar que a complexidade desta implementação é
-O(ElogV) [2](#Notas).
+O(ElogV) [(2)](#Notas).
 - **Operações sobre conjuntos disjuntos** (make_set, find_set, link, node_union):
 Tanto a função make_set como a função link são O(1). Quanto ás funções
 find_set e node_union, a utilização das heurísticas “compressão de caminhos” e
-“união por categoria” garante-nos que ambas são O(V) [3](#Notas).
+“união por categoria” garante-nos que ambas são O(V) [(3)](#Notas).
 
 #### Notas:
 
